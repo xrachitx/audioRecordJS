@@ -1,0 +1,23 @@
+.heading{
+    text-align: center;
+    left: 50%;
+    font-size: 5px;
+}
+.controls{
+    width: 800px;
+    margin: 0;
+    justify-content: center;
+}
+button{
+    margin: 20px;
+    left: 50%;
+    text-align: center;
+}
+audio{
+    height: 25px;
+    font-size: small;
+    margin-right: 20px;
+}
+li> *{
+    margin-left: 30px;
+}

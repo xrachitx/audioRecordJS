@@ -89,6 +89,7 @@ function createDownloadLink(blob) {
 	link.download = filename+".wav"; //download forces the browser to donwload the file using the  filename
 	link.innerHTML = "Download";
 
+	
 	//add the new audio element to li
 	li.appendChild(au);
 	
@@ -98,6 +99,7 @@ function createDownloadLink(blob) {
 	//add the save to disk link to li
 	li.appendChild(link);
 	
+
 	//upload link
 	var upload = document.createElement('a');
 	upload.href="/";
