@@ -75,7 +75,9 @@ function createDownloadLink(blob) {
 	var au = document.createElement('audio');
 	var li = document.createElement('li');
 	var link = document.createElement('a');
-
+	var predicted = document.createElement("P")
+	
+	// var son;
 	//name of .wav file to use during upload and download (without extendion)
 	var filename = new Date().toISOString();
 
@@ -115,10 +117,19 @@ function createDownloadLink(blob) {
 		  fd.append("file",blob, filename);
 		  xhr.open("POST","/",true);
 		  xhr.send(fd);
+		  xhr.onload=()=>{
+			var  son = xhr.responseText;
+			// predicted.innerHTML = son;
+			var rep = JSON.parse(xhr.responseText);
+			console.log("YE LO Data: "+ rep.name)
+			predicted.innerHTML = rep.name
+			li.appendChild(predicted);
+		  }
 	})
 	li.appendChild(document.createTextNode (" ")); //add a space in between
 	li.appendChild(upload); 	//add the upload link to li
 
-	//add the li element to the ol
+
+
     recordingsList.appendChild(li);
 }
