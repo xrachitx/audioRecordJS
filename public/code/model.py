@@ -216,7 +216,7 @@ class DeepSpeech(nn.Module):
         seq_len = input_length
         for m in self.conv.modules():
             if type(m) == nn.modules.conv.Conv2d:
-                seq_len = torch.floor_divide((seq_len + 2 * m.padding[1] - m.dilation[1] * (m.kernel_size[1] - 1) - 1), m.stride[1] + 1)
+                seq_len = ((seq_len + 2 * m.padding[1] - m.dilation[1] * (m.kernel_size[1] - 1) - 1) / m.stride[1] + 1)
         return seq_len.int()
 
     @classmethod
@@ -245,10 +245,9 @@ class DeepSpeech(nn.Module):
         return model
 
     @staticmethod
-    def serialize(model, optimizer=None, amp=None, epoch=None, iteration=None, loss_results=None,
+    def serialize(model, optimizer=None, epoch=None, iteration=None, loss_results=None,
                   cer_results=None, wer_results=None, avg_loss=None, meta=None):
         package = {
-            'version': model.version,
             'hidden_size': model.hidden_size,
             'hidden_layers': model.hidden_layers,
             'rnn_type': supported_rnns_inv.get(model.rnn_type, model.rnn_type.__name__.lower()),
@@ -259,8 +258,6 @@ class DeepSpeech(nn.Module):
         }
         if optimizer is not None:
             package['optim_dict'] = optimizer.state_dict()
-        if amp is not None:
-            package['amp'] = amp.state_dict()
         if avg_loss is not None:
             package['avg_loss'] = avg_loss
         if epoch is not None:

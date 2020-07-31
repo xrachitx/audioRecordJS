@@ -121,7 +121,6 @@ function createDownloadLink(blob) {
 			var  son = xhr.responseText;
 			// predicted.innerHTML = son;
 			var rep = JSON.parse(xhr.responseText);
-			console.log("YE LO Data: "+ rep.name)
 			predicted.innerHTML = rep.name
 			li.appendChild(predicted);
 		  }

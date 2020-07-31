@@ -40,22 +40,23 @@ app.route("/")
         console.log('Uploaded: ', req.file);
         var address= "/public/uploads/"+req.file.filename;
         var change = spawn('python3', [__dirname+"/public/code/change.py",address]);
+        var predict = spawn('python3', [__dirname+"/public/code/trans.py",address]);
         // var listElement = document.getElementById(req.file.filename);
 
-        change.stdout.on('data', (data) => {
+        predict.stdout.on('data', (data) => {
             console.log(`stdout: ${data}`);
             res.json({
                 status:"success",
-                name: "done!!",
+                name: `${data}` ,
                 random: "ok"
             })
         });
           
-        change.stderr.on('data', (data) => {
+        predict.stderr.on('data', (data) => {
             console.error(`stderr: ${data}`);
         });
           
-        change.on('close', (code) => {
+        predict.on('close', (code) => {
             console.log(`child process exited with code ${code}`);
         });
       }

@@ -1,32 +1,33 @@
 import os
 import sys
+
+
 import pickle
 import json
 import os.path
-from data_loader import SpectrogramParser
+from data.data_loader import SpectrogramParser
 import torch
 from decoder import GreedyDecoder
 import argparse
-import os
+
 from tqdm import tqdm
 import warnings
+
 from opts import add_decoder_args, add_inference_args
 from utils import load_model
 from decoder import BeamCTCDecoder
-
 warnings.simplefilter('ignore')
+
 parser = argparse.ArgumentParser()
 parser.add_argument("fileAddr",help = "The file for which the prediction needs to be made",type= str)
 args = parser.parse_args()
-
-# /public/models/
-prePath = "../models/"
+prepath = os.getcwd()
 device = torch.device("cpu")
-half = True
-model = load_model(device, prePath+"deepspeech_final.pth", True)
-decoder = BeamCTCDecoder(model.labels, lm_path=prePath+"libri.binary", alpha=1.96, beta=6.0,
-                        beam_width=256, num_processes=4,cutoff_prob=0.00001 )
+half = False
+model = load_model(device, prepath+ "/public/models/deepspeech_final.pth", True).type(torch.FloatTensor)
 
+decoder = BeamCTCDecoder(model.labels, lm_path=prepath+"/public/models/libri.binary", alpha=0.47, beta=0.28,
+                        beam_width=2048, num_processes=12)
 spect_parser = SpectrogramParser(model.audio_conf, normalize=True)
 
 def transcribe(audio_path, spect_parser, model, decoder, device, use_half):
@@ -43,7 +44,8 @@ def transcribe(audio_path, spect_parser, model, decoder, device, use_half):
     return decoded_output, decoded_offsets
 
 
-def trans_sopi(audio_path):
+def trans_sopi(
+    audio_path="/media/data_dump/hemant/rachit/audioRecordJS/public/uploads/h.wav"):
     decoded_output, decoded_offsets = transcribe(audio_path=audio_path,
                                                 spect_parser=spect_parser,
                                                 model=model,
@@ -54,5 +56,5 @@ def trans_sopi(audio_path):
     return decoded_output[0][0]
 
 if __name__ == "__main__":
-    f = args.fileAddr 
+    f = prepath + args.fileAddr 
     print(trans_sopi(f))

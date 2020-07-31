@@ -17,4 +17,4 @@ song = AudioSegment.from_wav(path).set_frame_rate(16000)
 
 song.export(os.getcwd()+ f, format='wav', bitrate='256k')
 
-print("Done!")
+# print("Done!")
