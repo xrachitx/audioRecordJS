@@ -11,6 +11,7 @@ var recordButton = document.getElementById("recordButton");
 var stopButton = document.getElementById("stopButton");
 var pauseButton = document.getElementById("pauseButton");
 
+
 //add events to those 2 buttons
 recordButton.addEventListener("click", start);
 stopButton.addEventListener("click", stopRecording);
@@ -72,10 +73,16 @@ function stopRecording() {
 function createDownloadLink(blob) {
 	
 	var url = URL.createObjectURL(blob);
+	var detailList = document.createElement("ul");
+	var textList = document.createElement("ul");
+	detailList.setAttribute("style","list-style-type: none")
+	textList.setAttribute("style","list-style-type: none")
 	var au = document.createElement('audio');
 	var li = document.createElement('li');
+	var li2 = document.createElement('li');
+	var li3 = document.createElement("li");
 	var link = document.createElement('a');
-	var predicted = document.createElement("P")
+	var predicted = document.createElement("input")
 	var inpt = document.createElement("input")
 	var country = document.createElement("select")
 	var gender = document.createElement("select")
@@ -87,7 +94,9 @@ function createDownloadLink(blob) {
 	gender.setAttribute("id","gender")
 	country.setAttribute("id","country")
 	inpt.setAttribute("id","spoken")
-	inpt.placeholder = "Audio Text"
+	inpt.placeholder = "True Text"
+	predicted.setAttribute("id","predicted")
+	predicted.placeholder = "Predicted Text"
 	var genderArr = new Array("Male","Female","Other")
 	var country_arr = new Array("Afghanistan", "Albania", "Algeria", "American Samoa", "Angola", "Anguilla", "Antartica", "Antigua and Barbuda", "Argentina", "Armenia", "Aruba", "Ashmore and Cartier Island", "Australia", "Austria", "Azerbaijan", "Bahamas", "Bahrain", "Bangladesh", "Barbados", "Belarus", "Belgium", "Belize", "Benin", "Bermuda", "Bhutan", "Bolivia", "Bosnia and Herzegovina", "Botswana", "Brazil", "British Virgin Islands", "Brunei", "Bulgaria", "Burkina Faso", "Burma", "Burundi", "Cambodia", "Cameroon", "Canada", "Cape Verde", "Cayman Islands", "Central African Republic", "Chad", "Chile", "China", "Christmas Island", "Clipperton Island", "Cocos (Keeling) Islands", "Colombia", "Comoros", "Congo, Democratic Republic of the", "Congo, Republic of the", "Cook Islands", "Costa Rica", "Cote d'Ivoire", "Croatia", "Cuba", "Cyprus", "Czeck Republic", "Denmark", "Djibouti", "Dominica", "Dominican Republic", "Ecuador", "Egypt", "El Salvador", "Equatorial Guinea", "Eritrea", "Estonia", "Ethiopia", "Europa Island", "Falkland Islands (Islas Malvinas)", "Faroe Islands", "Fiji", "Finland", "France", "French Guiana", "French Polynesia", "French Southern and Antarctic Lands", "Gabon", "Gambia, The", "Gaza Strip", "Georgia", "Germany", "Ghana", "Gibraltar", "Glorioso Islands", "Greece", "Greenland", "Grenada", "Guadeloupe", "Guam", "Guatemala", "Guernsey", "Guinea", "Guinea-Bissau", "Guyana", "Haiti", "Heard Island and McDonald Islands", "Holy See (Vatican City)", "Honduras", "Hong Kong", "Howland Island", "Hungary", "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Ireland, Northern", "Israel", "Italy", "Jamaica", "Jan Mayen", "Japan", "Jarvis Island", "Jersey", "Johnston Atoll", "Jordan", "Juan de Nova Island", "Kazakhstan", "Kenya", "Kiribati", "Korea, North", "Korea, South", "Kuwait", "Kyrgyzstan", "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg", "Macau", "Macedonia, Former Yugoslav Republic of", "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Man, Isle of", "Marshall Islands", "Martinique", "Mauritania", "Mauritius", "Mayotte", "Mexico", "Micronesia, Federated States of", "Midway Islands", "Moldova", "Monaco", "Mongolia", "Montserrat", "Morocco", "Mozambique", "Namibia", "Nauru", "Nepal", "Netherlands", "Netherlands Antilles", "New Caledonia", "New Zealand", "Nicaragua", "Niger", "Nigeria", "Niue", "Norfolk Island", "Northern Mariana Islands", "Norway", "Oman", "Pakistan", "Palau", "Panama", "Papua New Guinea", "Paraguay", "Peru", "Philippines", "Pitcaim Islands", "Poland", "Portugal", "Puerto Rico", "Qatar", "Reunion", "Romainia", "Russia", "Rwanda", "Saint Helena", "Saint Kitts and Nevis", "Saint Lucia", "Saint Pierre and Miquelon", "Saint Vincent and the Grenadines", "Samoa", "San Marino", "Sao Tome and Principe", "Saudi Arabia", "Scotland", "Senegal", "Seychelles", "Sierra Leone", "Singapore", "Slovakia", "Slovenia", "Solomon Islands", "Somalia", "South Africa", "South Georgia and South Sandwich Islands", "Spain", "Spratly Islands", "Sri Lanka", "Sudan", "Suriname", "Svalbard", "Swaziland", "Sweden", "Switzerland", "Syria", "Taiwan", "Tajikistan", "Tanzania", "Thailand", "Tobago", "Toga", "Tokelau", "Tonga", "Trinidad", "Tunisia", "Turkey", "Turkmenistan", "Tuvalu", "Uganda", "Ukraine", "United Arab Emirates", "United Kingdom", "Uruguay", "USA", "Uzbekistan", "Vanuatu", "Venezuela", "Vietnam", "Virgin Islands", "Wales", "Wallis and Futuna", "West Bank", "Western Sahara", "Yemen", "Yugoslavia", "Zambia", "Zimbabwe");
 	var curCount;
@@ -96,6 +105,9 @@ function createDownloadLink(blob) {
 		curCount.setAttribute("id",country_arr[i])
 		curCount.innerHTML = country_arr[i]
 		country.appendChild(curCount)
+		if (country_arr[i] == "India"){
+			country.selectedIndex = i;
+		}
 	}
 	var curGend;
 	for (var i =0;i<genderArr.length;i++){
@@ -104,8 +116,7 @@ function createDownloadLink(blob) {
 		curGend.innerHTML = genderArr[i]
 		gender.appendChild(curGend)
 	}
-	// var son;
-	//name of .wav file to use during upload and download (without extendion)
+
 	var filename = new Date().toISOString();
 
 	//add controls to the <audio> element
@@ -122,10 +133,11 @@ function createDownloadLink(blob) {
 	//add the new audio element to li
 	li.appendChild(au);
 	
-	li.appendChild(inpt)
-	li.appendChild(country)
-	li.appendChild(gender)
-	li.appendChild(age)
+	li3.appendChild(inpt)
+	li2.appendChild(country)
+	li2.appendChild(gender)
+	li2.appendChild(age)
+	li3.appendChild(predicted);
 	//add the save to disk link to li
 	li.appendChild(link);
 	
@@ -161,8 +173,8 @@ function createDownloadLink(blob) {
 			var  son = xhr.responseText;
 			// predicted.innerHTML = son;
 			var rep = JSON.parse(xhr.responseText);
-			predicted.innerHTML = rep.name
-			li.appendChild(predicted);
+			predicted.value = rep.name
+			
 		  }
 	})
 	li.appendChild(document.createTextNode (" ")); //add a space in between
@@ -170,5 +182,9 @@ function createDownloadLink(blob) {
 
 
 
-    recordingsList.appendChild(li);
+	recordingsList.appendChild(li);
+	detailList.appendChild(li2)
+	textList.appendChild(li3)
+	recordingsList.appendChild(detailList)
+	recordingsList.appendChild(textList)
 }

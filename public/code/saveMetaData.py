@@ -1,5 +1,6 @@
 import argparse
 import os
+import json
 
 parser = argparse.ArgumentParser()
 parser.add_argument("fileAddr",help = "File name for the recorded audio",type= str)
@@ -16,10 +17,21 @@ gender = args.gender
 country = args.country
 
 path = os.getcwd()+ f
-pathMetaData = os.getcwd()+"/public/uploads/metadata.csv"
-metaData = open(pathMetaData, "a")
-filename = f.split("/")[-1]
-print(path)
-metaData.write("\n"+filename+","+age+","+gender+","+country)
 txtFile = open(path,"w")
 txtFile.write(txt)
+
+
+pathMetaData = os.getcwd()+"/public/uploads/metadata.json"
+jsonFile = open(pathMetaData,"r+")
+metaData = json.load(jsonFile)
+filename = f.split("/")[-1]
+metaData[filename[:-3]] = {}
+print(path)
+metaData[filename[:-3]]["age"] = age
+metaData[filename[:-3]]["gender"] = gender
+metaData[filename[:-3]]["country"] = country
+# json.dump(metaData,jsonFile)
+with open(pathMetaData, 'w') as fp:
+    json.dump(metaData, fp)
+# # metaData.write("\n"+filename+","+age+","+gender+","+country)
+# print("jatham")

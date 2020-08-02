@@ -16,7 +16,7 @@ var upload = multer( { storage: storage } );
 
 
 const hostname = "localhost";
-const port = 5000;
+const port = 3000;
 
 const app = express();
 
@@ -42,7 +42,6 @@ app.route("/")
         console.log(req.body.age)
         console.log(req.body.gender)
         console.log(req.body.country)
-        // console.log(req)
         var address= "/public/uploads/wav/"+req.file.filename;
         
         var addressTxt = "/public/uploads/txt/" + req.file.filename.slice(0,-3)+"txt";
@@ -50,10 +49,6 @@ app.route("/")
         var change = spawn('python3', [__dirname+"/public/code/change.py",address]);
         var saveMeta = spawn('python3', [__dirname+"/public/code/saveMetaData.py",addressTxt,req.body.audioText,req.body.age,req.body.gender,req.body.country]);
         var predict = spawn('python3', [__dirname+"/public/code/trans.py",address]);
-        // var listElement = document.getElementById(req.file.filename);
-        saveMeta.stdout.on("data",(data)=>{
-            console.log(`${data}`);
-        });
         predict.stdout.on('data', (data) => {
             console.log(`stdout: ${data}`);
             res.json({
@@ -73,17 +68,6 @@ app.route("/")
       }
 });
 
-app.route("/result")
-.all((req,res,next)=>{
-    res.statusCode = 200;
-    res.setHeader("Content-Type", "text/html");
-    // console.log("yi");
-    next();
-})
-.post((req,res,next)=>{
-    console.log(req)
-
-});
 
 
 const server = http.createServer(app);
