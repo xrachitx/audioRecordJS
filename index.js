@@ -6,9 +6,9 @@ const multer  = require('multer')
 const { spawn }  = require('child_process');
 var storage = multer.diskStorage(
     {
-        destination: './public/uploads/',
+        destination: './public/uploads/wav/',
         filename: function ( req, file, cb ) {
-            cb( null, file.originalname+".wav");
+            cb( null, "MIDAS_"+file.originalname+".wav");
         }
     }
 );
@@ -38,11 +38,22 @@ app.route("/")
 .post(upload.single("file"),(req,res,next)=>{
     if (req.file) {
         console.log('Uploaded: ', req.file);
-        var address= "/public/uploads/"+req.file.filename;
+        console.log(req.body.audioText)
+        console.log(req.body.age)
+        console.log(req.body.gender)
+        console.log(req.body.country)
+        // console.log(req)
+        var address= "/public/uploads/wav/"+req.file.filename;
+        
+        var addressTxt = "/public/uploads/txt/" + req.file.filename.slice(0,-3)+"txt";
+        console.log(addressTxt)
         var change = spawn('python3', [__dirname+"/public/code/change.py",address]);
+        var saveMeta = spawn('python3', [__dirname+"/public/code/saveMetaData.py",addressTxt,req.body.audioText,req.body.age,req.body.gender,req.body.country]);
         var predict = spawn('python3', [__dirname+"/public/code/trans.py",address]);
         // var listElement = document.getElementById(req.file.filename);
-
+        saveMeta.stdout.on("data",(data)=>{
+            console.log(`${data}`);
+        });
         predict.stdout.on('data', (data) => {
             console.log(`stdout: ${data}`);
             res.json({
